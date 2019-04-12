@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as pt
-from PIL import Image
+
 
 
 data = pd.read_csv("train.csv").as_matrix()
