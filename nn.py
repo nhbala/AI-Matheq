@@ -53,7 +53,8 @@ def training_function(t_data, nn, run_amt, l_rate, ac_func, der_ac_func):
                 layer0[n] = t_data[t, new_n]
             nn["l0"] = layer0
 
-            #saving a_j values for later
+            #saving inj values for later
+            #a_j values are stored in neural network at each layer
             inj_arr = []
             #set activation energy for other layers
             for i in (len(nn.getKeys()) -1)/2:
@@ -61,10 +62,11 @@ def training_function(t_data, nn, run_amt, l_rate, ac_func, der_ac_func):
                 prev_layer = nn["l" + str(i)]
                 weights = nn["w" + str(i)]
                 new_layer_pre = np.matmul(weights, prev_layer)
-                a_j_arr.append(new_layer_pre)
+                inj_arr.append(new_layer_pre)
                 next_layer = vfunc(new_layer_pre)
                 nn["l" + str(i + 1)] = next_layer
 
+            all_delta_j_arr = []
             delta_j_arr = []
             #backward algorithm
             #finding delta_j values for output layer
@@ -74,27 +76,30 @@ def training_function(t_data, nn, run_amt, l_rate, ac_func, der_ac_func):
                 curr_inj = inj_values[k][0]
                 delta_j = der_ac_func(curr_inj) * ((map_label(t_data[t][0]))[k][0] - final_layer[k][0])
                 delta_j_arr.append(delta_j)
+            all_delta_j_arr.append(delta_j_arr)
 
-            #this is the second to last layer/weight number
+            #this is the layer number for second to last layer/last weight
             curr_start = ((len(nn.getKeys()) -1)/2) - 1
             for l in range(curr_start, -1, -1):
+                delta_i_arr = []
                 curr_layer = nn["l" + l]
                 cur_ini_values = inj_arr.pop()
-                #need to work and finish this part
+                #Michael did the code from here pls check this over
                 for m in range(len(curr_layer)):
+                    sum_weight_deltaj = 0
+                    for p in range(len(delta_j_arr)):
+                        sum_weight_deltaj = sum_weight_deltaj + nn["w" + l][m][p] * delta_j_arr[p]
                     curr_ini = curr_ini_values[m][0]
-                    delta_i = der_ac_func(curr_inj_values[m])
+                    delta_i = der_ac_func(curr_ini) * sum_weight_deltaj
+                    delta_i_arr.append(delta_i)
+                all_delta_j_arr.insert(0, delta_i_arr)
+                delta_j_arr = delta_i_arr
 
-
-
-
-
-
-
-
-
-
-        for t in range(len(t_data)-1):
-            new_t = t + 1
-            if new_t == 1:
-                first_layer = nn["l" + new_t]
+            #update each weight
+            alpha = 1 #We need to define an alpha value
+            for q in range(curr_start):
+                curr_weights = nn["w" + q]
+                curr_layer = mm["l" + q]
+                for r in range(curr_weights):
+                    for s in range(curr_weights[r]):
+                        curr_weights[r][s] = curr_weights[r][s] + alpha * curr_layer[r] * all_delta_j_arr[q][s]
