@@ -5,10 +5,10 @@ import matplotlib.pyplot as pt
 
 
 data = pd.read_csv("train.csv").as_matrix()
-print(data)
-xtrain = data[0:21000, 1:]
+xtrain = data[0:21000, :]
 train_label = data[0:21000, 0]
-d=xtrain[8]
+print(xtrain)
+
 # print(d)
 
 #

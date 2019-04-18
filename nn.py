@@ -39,7 +39,10 @@ def sigmoid_function_derivative(input):
 
 def training_function(t_data, nn, run_amt, l_rate, ac_func, der_ac_func):
     #iteration overall
+
+    mse_lst = []
     for x in range(run_amt):
+        total_mse = 0
 
         #looping through each example in training_data
         for t in range(len(t_data)):
@@ -66,17 +69,25 @@ def training_function(t_data, nn, run_amt, l_rate, ac_func, der_ac_func):
                 next_layer = vfunc(new_layer_pre)
                 nn["l" + str(i + 1)] = next_layer
 
+
+
+
+
             all_delta_j_arr = []
             delta_j_arr = []
             #backward algorithm
             #finding delta_j values for output layer
             final_layer = nn["l" + (len(nn.getKeys())-1)
             inj_values = inj_arr.pop()
+            mse_error = 0
             for k in range(len(final_layer)):
                 curr_inj = inj_values[k][0]
                 delta_j = der_ac_func(curr_inj) * ((map_label(t_data[t][0]))[k][0] - final_layer[k][0])
+                mse_error += (delta_j ** 2)
                 delta_j_arr.append(delta_j)
             all_delta_j_arr.append(delta_j_arr)
+            total_mse += mse_error
+
 
             #this is the layer number for second to last layer/last weight
             curr_start = ((len(nn.getKeys()) -1)/2) - 1
@@ -96,10 +107,13 @@ def training_function(t_data, nn, run_amt, l_rate, ac_func, der_ac_func):
                 delta_j_arr = delta_i_arr
 
             #update each weight
-            alpha = 1 #We need to define an alpha value
             for q in range(curr_start):
                 curr_weights = nn["w" + q]
                 curr_layer = mm["l" + q]
                 for r in range(curr_weights):
                     for s in range(curr_weights[r]):
-                        curr_weights[r][s] = curr_weights[r][s] + alpha * curr_layer[r] * all_delta_j_arr[q][s]
+                        curr_weights[r][s] = curr_weights[r][s] + l_rate * curr_layer[r] * all_delta_j_arr[q][s]
+
+        mse_lst.append(total_mse)
+
+    return (nn, mse_lst)
