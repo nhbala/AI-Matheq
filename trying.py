@@ -18,7 +18,7 @@ loaded_model = model_from_yaml(loaded_model_yaml)
 loaded_model.load_weights("model.h5")
 
 
-im = cv2.imread('2.jpg',0)
+im = cv2.imread('11.jpg',0)
 im = cv2.resize(im,  (28, 28))
 im.reshape((28,28))
 
