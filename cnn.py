@@ -12,7 +12,7 @@ from keras.models import model_from_yaml
 
 curr_url = "https://www.kaggle.com/hupe1980/keras-digit-recognizer-mnist-data"
 def load_data():
-    df_train  = pd.read_csv("train.csv")
+    df_train  = pd.read_csv("datasets/shuffled.csv")
 
     y_train = df_train['label'].values
     X_train = df_train.drop(columns=['label']).values
@@ -31,6 +31,7 @@ X_train = X_train
 y_train = to_categorical(y_train)
 
 num_classes = y_train.shape[1]
+print(num_classes)
 
 def convolutional_model(num_classes):
     model = Sequential()
@@ -48,22 +49,22 @@ def convolutional_model(num_classes):
     return model
 
 model = convolutional_model(num_classes)
-model.fit(X_train, y_train, validation_split=0.1, epochs=5, batch_size=128, verbose=1)
+model.fit(X_train, y_train, validation_split=0.3, epochs=4, batch_size=128, verbose=1)
 
 
 model_yaml = model.to_yaml()
-with open("model.yaml", "w") as yaml_file:
+with open("maybe.yaml", "w") as yaml_file:
     yaml_file.write(model_yaml)
 # serialize weights to HDF5
-model.save_weights("model.h5")
+model.save_weights("maybe.h5")
 print("Saved model to disk")
 
-im = cv2.imread('11.jpg',0)
-im = cv2.resize(im,  (28, 28))
-im.reshape((28,28)) # (28,28)
-
-batch = np.expand_dims(im,axis=0)# (1, 28, 28)
-batch = np.expand_dims(batch,axis=3) # (1, 28, 28,1)
-
-
-print(model.predict(batch, batch_size=1))
+# im = cv2.imread('11.jpg',0)
+# im = cv2.resize(im,  (28, 28))
+# im.reshape((28,28)) # (28,28)
+#
+# batch = np.expand_dims(im,axis=0)# (1, 28, 28)
+# batch = np.expand_dims(batch,axis=3) # (1, 28, 28,1)
+#
+#
+# print(model.predict(batch, batch_size=1))
