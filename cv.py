@@ -62,7 +62,9 @@ for coor in coor_lst:
     cv2.imwrite(str(comp) + '.jpg', roi)
     new_img = cv2.imread(str(comp) + '.jpg', cv2.IMREAD_GRAYSCALE)
     thresh, im_bw = cv2.threshold(new_img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    resize_img = cv2.resize(im_bw,(28 , 28))
+    final = cv2.bitwise_not(im_bw)
+    constant = cv2.copyMakeBorder(final, 25, 25, 25, 25, cv2.BORDER_CONSTANT, value=[0,0,0])
+    resize_img = cv2.resize(constant,(28 , 28))
     cv2.imwrite(str(comp) + '.jpg', resize_img)
 
 
