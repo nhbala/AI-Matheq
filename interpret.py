@@ -1,7 +1,7 @@
 import re
 from sympy import *
 from sympy.parsing.sympy_parser import parse_expr
-import matplotlib.pyplot as plt
+import math
 
 #figure out if trig functions are involved in equation
 def trig(s):
@@ -46,14 +46,22 @@ def trig(s):
 def poly(s):
     for i in range(len(s)):
         curr = s[i]
-        if curr in ["a","t","s","c","("] and i != 0:
+        if curr in ["a","t","s","c","(","m"] and i != 0:
             if s[i-1].isdigit():
                 s = s[:i] + "*" + s[i:]
+    return s
+
+def handleE(s):
+    for i in range(len(s)):
+        curr = s[i]
+        if curr == "e":
+            s = s[:i] + "math.e" + s[i+1:]
     return s
 
 def interpret(s):
     print("At interepret, s is:"+str(type(s)))
     s,record, weird = trig(s)
+    s = handleE(s)
     s = poly(s)
     equals = s.split("=")
     if len(equals) > 2:
